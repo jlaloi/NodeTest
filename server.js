@@ -25,9 +25,7 @@ router.get('/', function (req, res) {
     res.json({message: 'Hello!'});
 });
 
-require('./app/router/userRouter')(router);
-
-app.use('/api', router);
+app.use('/api', require('./app/router/userRouter'));
 
 app.use(function (err, req, res, next) {
     console.log(err.stack);
