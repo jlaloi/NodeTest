@@ -44,7 +44,19 @@ router.route('/users')
         User.find(function (err, users) {
             if (err)
                 res.send(err);
+            res.json(users);
+        });
+    });
 
+router.route('/users/search')
+
+    .post(function (req, res) {
+        console.log('Search user request');
+        User.find({
+            lastName: new RegExp(req.body.lastName, 'i')
+        }, function (err, users) {
+            if (err)
+                res.send(err);
             res.json(users);
         });
     });
@@ -84,10 +96,10 @@ router.route('/users/:user_id')
         }, function (err, user) {
             if (err)
                 res.send(err);
-
             res.json({message: 'Successfully deleted'});
         });
     });
+
 
 app.use('/api', router);
 
