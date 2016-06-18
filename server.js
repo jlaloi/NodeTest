@@ -1,3 +1,5 @@
+"use strict";
+
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
@@ -6,6 +8,7 @@ var bodyParser = require('body-parser');
 // sudo docker run -p 27017:27017 --name test-mongo -d mongo
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://0.0.0.0:27017/test-mongo');
+mongoose.Promise = global.Promise;
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());

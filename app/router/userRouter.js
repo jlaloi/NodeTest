@@ -1,3 +1,5 @@
+"use strict";
+
 var User = require('./../models/user');
 
 var userRouter = function (router) {
@@ -5,25 +7,19 @@ var userRouter = function (router) {
     router.route('/users')
         .post(function (req, res, next) {
             console.log('Create user request');
-            var user = new User();
-            user.firstName = req.body.firstName;
-            user.lastName = req.body.lastName;
-            user.save(function (err) {
-                if (err)
-                    next(err);
-                else
-                    res.json({message: 'user created!'});
-            });
+            let user = new User(req.body);
+            user.save().then(
+                user => res.json({message: 'user created!', 'user': user}),
+                err => next(err)
+            );
         })
 
         .get(function (req, res, next) {
             console.log('Get users request');
-            User.find(function (err, users) {
-                if (err)
-                    next(err);
-                else
-                    res.json(users);
-            });
+            User.find().then(
+                users => res.json(users),
+                err => next(err)
+            );
         });
 
     router.route('/users/search')
@@ -32,54 +28,41 @@ var userRouter = function (router) {
             console.log('Search user request');
             User.find({
                 lastName: new RegExp(req.body.lastName, 'i')
-            }, function (err, users) {
-                if (err)
-                    next(err);
-                else
-                    res.json(users);
-            });
+            }).then(
+                user => res.json(user),
+                err => next(err)
+            );
         });
 
     router.route('/users/:user_id')
 
         .get(function (req, res, next) {
             console.log('Get user request');
-            User.findById(req.params.user_id, function (err, user) {
-                if (err)
-                    next(err);
-                else
-                    res.json(user);
-            });
+            User.findById(req.params.user_id).then(
+                user => res.json(user),
+                err => next(err)
+            );
         })
 
         .put(function (req, res, next) {
             console.log('Modify user request');
-            User.findById(req.params.user_id, function (err, user) {
-                if (err)
-                    res.send(err);
-                else {
-                    user.firstName = req.body.firstName;
-                    user.lastName = req.body.lastName;
-                    user.save(function (err) {
-                        if (err)
-                            next(err);
-                        else
-                            res.json({message: 'user updated!'});
-                    });
-                }
-            });
+            User.findById(req.params.user_id).then(
+                user => {
+                    user.update(req.body).then(
+                        user => res.json({message: 'user updated!'}),
+                        err => next(err)
+                    );
+                },
+                err => next(err)
+            );
         })
 
         .delete(function (req, res, next) {
             console.log('Delete user request');
-            User.remove({
-                _id: req.params.user_id
-            }, function (err, user) {
-                if (err)
-                    next(err);
-                else
-                    res.json({message: 'Successfully deleted'});
-            });
+            User.remove({_id: req.params.user_id}).then(
+                user => res.json({message: 'Successfully deleted'}),
+                err => next(err)
+            );
         });
 
 };
